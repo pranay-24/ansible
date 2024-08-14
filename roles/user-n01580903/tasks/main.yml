@@ -1,0 +1,39 @@
+---
+- name: Create admin group
+  ansible.builtin.group:
+    name: "{{ admin_group }}"
+    state: present
+
+- name: Create user accounts
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ admin_group }},{{ additional_groups | join(',') }}"
+    append: yes
+  loop: "{{ users }}"
+
+- name: Generate SSH keys for users
+  ansible.builtin.user:
+    name: "{{ item }}"
+    generate_ssh_key: yes
+    ssh_key_bits: "{{ ssh_key_bits }}"
+    ssh_key_file: .ssh/id_rsa
+  loop: "{{ users }}"
+  
+- name: Collect public keys
+  ansible.builtin.slurp:
+    src: "/home/{{ item }}/.ssh/id_rsa.pub"
+  loop: "{{ users }}"
+  register: public_keys
+
+- name: Add public keys to authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ item[0] }}"
+    key: "{{ item[1].content | b64decode }}"
+  loop: "{{ users | product(public_keys.results) | list }}"
+
+- name: Fetch first user's private key from VM1
+  ansible.builtin.fetch:
+    src: "/home/{{ users[0] }}/.ssh/id_rsa"
+    dest: "./{{ users[0] }}_private_key"
+    flat: yes
+  when: inventory_hostname == groups['all'][0]

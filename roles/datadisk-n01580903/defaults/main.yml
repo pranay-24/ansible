@@ -1,0 +1,4 @@
+---
+data_disk: /dev/sdc  # Adjust this to match your actual disk device
+part1_size: 4096  # Size in MiB
+part2_size: 5120  # Size in MiB

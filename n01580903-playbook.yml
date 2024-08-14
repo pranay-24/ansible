@@ -1,0 +1,12 @@
+---
+- name: Configure Linux nodes
+  hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - profile-n01580903
+    - user-n01580903
+    - datadisk-n01580903
+    - webserver-n01580903
+    
+    

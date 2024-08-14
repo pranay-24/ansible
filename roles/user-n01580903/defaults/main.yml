@@ -1,0 +1,9 @@
+---
+users:
+  - user100
+  - user200
+  - user300
+admin_group: cloudadmins
+additional_groups:
+  - wheel
+ssh_key_bits: 2048

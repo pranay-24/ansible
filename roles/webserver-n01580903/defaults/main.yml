@@ -1,0 +1,4 @@
+---
+apache_package: httpd  # Use 'apache2' for Ubuntu/Debian
+apache_service: httpd  # Use 'apache2' for Ubuntu/Debian
+apache_document_root: /var/www/html

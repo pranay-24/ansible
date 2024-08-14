@@ -1,0 +1,25 @@
+---
+- name: Install Apache web server
+  ansible.builtin.package:
+    name: "{{ apache_package }}"
+    state: present
+
+- name: Create HTML files on automation server
+  ansible.builtin.template:
+    src: node.html.j2
+    dest: "/tmp/{{ inventory_hostname }}.html"
+  delegate_to: localhost
+  run_once: true
+
+- name: Copy HTML file to web server
+  ansible.builtin.copy:
+    src: "/tmp/{{ inventory_hostname }}.html"
+    dest: "{{ apache_document_root }}/index.html"
+    mode: '0444'
+
+- name: Set Apache service state
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+  notify: Restart Apache
